@@ -34,20 +34,20 @@ def main():
     doc.datetime = formatted
     doc.operator = 'Camilo Cano'
     doc.setup = 'P2.S1'
-    doc.project = project = UNDEFINED
-    doc.wafer = wafer = UNDEFINED
-    doc.reticle = reticle = UNDEFINED
-    doc.die = die_name = UNDEFINED
-    doc.dut = dut = "wvg" # Query - Localizar
+    doc.project = project = "PRODUCT"
+    doc.wafer = wafer = "V051_1414_W03"
+    doc.reticle = reticle = "C"
+    doc.die = die_name = "1"
+    doc.dut = dut = "p21" # Query - Localizar
     doc.polarization = polarization = 'nana'
     doc.die_temperature = "na" #kOhm Tacc
     doc.coupling_type = 'SM-SM'
     doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' # Validacion
     doc.idosa = 'OSA20' # "EXFO OSA20" # Validacion
-    doc.operator_notes = """NA""" # Validacion / Procesar
-    doc.opm_power = -6 #dBm # Añadir unidades en Procesar
+    doc.operator_notes = """OPM Connected to the 5p output of the splitter""" # Validacion / Procesar
+    #doc.opm_power = -6 #dBm # Añadir unidades en Procesar
     doc.splitter = "1x295/5-1"  
-      
+    doc.opm_power = opm.measure_power() #dBm # Añadir unidades en Procesar
     # Saving data
     home = expanduser("~")
     folder_lab = os.path.expandvars("./data")
@@ -61,6 +61,7 @@ def main():
         opm_idn = opm.id
         # osa.wait_for()
         print("Instrument ID:", osa_idn)
+        print("Instrument ID:", opm_idn)
 
         # OSA settings
         tracename = 1
@@ -73,8 +74,7 @@ def main():
         )
         osa.run_sweep(tracename, averages=averages)
         trace = osa.get_trace(tracename)
-        doc.coupler_2X2_90_10_SN = "none"
- 
+        print(f"Power measured by OPM: {opm.measure_power()} dBm")
         ## Editing the yaml document
         doc.osa_idn = osa_idn
         doc.osa_resolution = osa.resolution_bandwidth
