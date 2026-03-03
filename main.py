@@ -1,5 +1,5 @@
 from utils import plot_trace, save_trace
-from lab_devices import Yeni, YAMLDOCUMENT
+from lab_devices import Yeni, Opm, YAMLDOCUMENT
 
 import os, datetime, time
 from os.path import isfile, expanduser
@@ -22,6 +22,13 @@ def main():
     except Exception as e:
         raise ConnectionError(f"Could not connect to OSA:\n {e}")
 
+    # Connect to the OPM
+    try:
+        opm = Opm(
+            resource_address = 'USB0::0x1313::0x8078::P0030943::INSTR',
+        )
+    except Exception as e:
+        raise ConnectionError(f"Could not connect to OPM:\n {e}")
     # Configure the YAML document
     doc = YAMLDOCUMENT()
     doc.datetime = formatted
@@ -31,15 +38,16 @@ def main():
     doc.wafer = wafer = UNDEFINED
     doc.reticle = reticle = UNDEFINED
     doc.die = die_name = UNDEFINED
-    doc.dut = dut = "wvg"
+    doc.dut = dut = "wvg" # Query - Localizar
     doc.polarization = polarization = 'nana'
     doc.die_temperature = "na" #kOhm Tacc
     doc.coupling_type = 'SM-SM'
-    doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm'
-    doc.idosa = 'OSA20' # "EXFO OSA20"
-    doc.operator_notes = """NA"""
-    doc.opm_power = -6 #dBm
-    
+    doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' # Validacion
+    doc.idosa = 'OSA20' # "EXFO OSA20" # Validacion
+    doc.operator_notes = """NA""" # Validacion / Procesar
+    doc.opm_power = -6 #dBm # Añadir unidades en Procesar
+    doc.splitter = "1x295/5-1"  
+      
     # Saving data
     home = expanduser("~")
     folder_lab = os.path.expandvars("./data")
@@ -50,6 +58,7 @@ def main():
     # Work with the OSA
     with osa: 
         osa_idn = osa.id
+        opm_idn = opm.id
         # osa.wait_for()
         print("Instrument ID:", osa_idn)
 
@@ -57,10 +66,10 @@ def main():
         tracename = 1
         averages = 5
         osa.setup_sweep(
-            center_wavelength = 1550e-9,
-            span = 100e-9,
+            center_wavelength = 1565e-9,
+            span = 80e-9,
             sweep_mode = 'SINGLE',
-            sensitivity = -65,
+            sensitivity = -70,
         )
         osa.run_sweep(tracename, averages=averages)
         trace = osa.get_trace(tracename)
