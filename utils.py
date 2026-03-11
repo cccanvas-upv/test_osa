@@ -1,7 +1,5 @@
-import numpy as np 
-import matplotlib
-matplotlib.use("Qt5Agg")
-import matplotlib.pyplot as plt
+import numpy as np
+import plotly.graph_objects as go
 import os
 from os.path import isfile, expanduser
 
@@ -37,11 +35,14 @@ def dBmtoW(P_dBm):
 def plot_trace(trace):
     w = trace[0]
     p = trace[1]
-    plt.figure(1)
-    plt.plot(w, p)
-    plt.xlabel('Wavelength [nm]')
-    plt.ylabel('Power [dBm]')
-    plt.show()
+    fig = go.Figure(
+        data=[go.Scatter(x=w, y=p, mode="lines", name="Trace")]
+    )
+    fig.update_layout(
+        xaxis_title="Wavelength [nm]",
+        yaxis_title="Power [dBm]",
+    )
+    fig.show()
 
 def WtodBm(P_W):
     # Convert lists or scalars to numpy array for uniform handling

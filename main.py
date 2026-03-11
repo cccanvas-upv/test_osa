@@ -36,24 +36,25 @@ def main():
     doc.setup = 'P2.S1'
     doc.project = project = "PRODUCT"
     doc.wafer = wafer = "V051_1414_W03"
-    doc.reticle = reticle = "C"
-    doc.die = die_name = "1"
-    doc.dut = dut = "p21" # Query - Localizar
+    doc.reticle = reticle = "20"
+    doc.die = die_name = "3"
+    doc.dut = dut = "p1" # Query - Localizar
     doc.polarization = polarization = 'nana'
     doc.die_temperature = "na" #kOhm Tacc
-    doc.coupling_type = 'SM-SM'
+    doc.coupling_type = 'VERT-SM-SM'
+    doc.coupling_angle = angle = 49 # degrees
     doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' # Validacion
     doc.idosa = 'OSA20' # "EXFO OSA20" # Validacion
-    doc.operator_notes = """OPM Connected to the 5p output of the splitter""" # Validacion / Procesar
+    doc.operator_notes = """Low Power""" # Validacion / Procesar
     #doc.opm_power = -6 #dBm # Añadir unidades en Procesar
     doc.splitter = "1x295/5-1"  
     doc.opm_power = opm.measure_power() #dBm # Añadir unidades en Procesar
     # Saving data
-    home = expanduser("~")
     folder_lab = os.path.expandvars("./data")
-    folder_measurements = "/".join([folder_lab,project,wafer,reticle,die_name])
-    file_name = f"{dut}"
-    file_path = "/".join([folder_measurements,file_name])
+    save_date = datetime.datetime.now().strftime("%Y%m%d")
+    circuit = die_name
+    folder_measurements = "/".join([folder_lab, project, wafer, save_date])
+    file_name = f"R{reticle}-C{circuit}-{dut}-{angle}"
 
     # Work with the OSA
     with osa: 
