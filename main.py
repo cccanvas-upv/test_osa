@@ -25,7 +25,7 @@ def main():
     # Connect to the OSA
     # try:
     #     osa = Yoko(
-    #         resource_address = 'TCPIP0::192.168.54.1::5025::SOCKET',
+    #         resource_address = 'TCPIP0::192.168.54.1::5025::SOCKET', # Check the IP address of the OSA
     #     )
     # except Exception as e:
     #     raise ConnectionError(f"Could not connect to OSA:\n {e}")
@@ -47,15 +47,14 @@ def main():
     doc.wafer = wafer = "XXXX"
     doc.reticle = reticle = "XX"
     doc.die = die_name = "X"
-    doc.dut = dut = "XX" # Query - Localizar
+    doc.dut = dut = "XX" 
     doc.polarization = polarization = 'nana'
     doc.die_temperature = "na" #kOhm Tacc
     doc.coupling_type = 'VERT-SM-SM'
     doc.coupling_angle = angle = 49 # degrees
-    doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' # Validacion
-    doc.idosa = 'OSA20' # "EXFO OSA20" # Validacion
-    doc.operator_notes = """XXXXXXXX""" # Validacion / Procesar
-    #doc.opm_power = -6 #dBm # Añadir unidades en Procesar
+    doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' 
+    doc.idosa = 'OSA20' # "EXFO OSA20" 
+    doc.operator_notes = """XXXXXXXX""" 
     doc.splitter = "1x295/5-1"  
     # Saving data
     folder_lab = os.path.expandvars("./data")
@@ -80,7 +79,7 @@ def main():
             span = 80e-9,
             sweep_mode = 'SINGLE',
             sensitivity = -70, # Consider to change this value if high power is measured by OPM
-            resolution = 
+            resolution = 200e-12, # Check between OSAs - After sweep value 
         )
         osa.run_sweep(tracename, averages=averages)
         trace = osa.get_trace(tracename)
