@@ -14,4 +14,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-lab-devices = { git = "https://github.com/UPVfab/lab_equipment.git", rev = "alpha_0_1_2" }
+lab-devices = { git = "https://github.com/UPVfab/lab_equipment.git", rev = "alpha_1_4_0" }
