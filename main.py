@@ -1,5 +1,5 @@
 from utils import plot_trace, save_trace
-from lab_devices import Yeni, Opm, YAMLDOCUMENT
+from lab_devices import Yeni, Yoko, Opm, YAMLDOCUMENT
 
 import os, datetime, time
 from os.path import isfile, expanduser
@@ -21,6 +21,14 @@ def main():
         )
     except Exception as e:
         raise ConnectionError(f"Could not connect to OSA:\n {e}")
+    
+    # Connect to the OSA
+    # try:
+    #     osa = Yoko(
+    #         resource_address = 'TCPIP0::192.168.54.1::5025::SOCKET',
+    #     )
+    # except Exception as e:
+    #     raise ConnectionError(f"Could not connect to OSA:\n {e}")
 
     # Connect to the OPM
     try:
@@ -29,32 +37,32 @@ def main():
         )
     except Exception as e:
         raise ConnectionError(f"Could not connect to OPM:\n {e}")
+    
     # Configure the YAML document
     doc = YAMLDOCUMENT()
     doc.datetime = formatted
-    doc.operator = 'Camilo Cano'
-    doc.setup = 'P2.S1'
-    doc.project = project = "PRODUCT"
-    doc.wafer = wafer = "V051_1414_W03"
-    doc.reticle = reticle = "20"
-    doc.die = die_name = "3"
-    doc.dut = dut = "p1" # Query - Localizar
+    doc.operator = 'Your Name'
+    doc.setup = 'PX.SX'
+    doc.project = project = "XXXXX"
+    doc.wafer = wafer = "XXXX"
+    doc.reticle = reticle = "XX"
+    doc.die = die_name = "X"
+    doc.dut = dut = "XX" # Query - Localizar
     doc.polarization = polarization = 'nana'
     doc.die_temperature = "na" #kOhm Tacc
     doc.coupling_type = 'VERT-SM-SM'
     doc.coupling_angle = angle = 49 # degrees
     doc.idsource = "ASE1"#'FiberLabs ASE-FL7015 1530-1610nm' # Validacion
     doc.idosa = 'OSA20' # "EXFO OSA20" # Validacion
-    doc.operator_notes = """Low Power""" # Validacion / Procesar
+    doc.operator_notes = """XXXXXXXX""" # Validacion / Procesar
     #doc.opm_power = -6 #dBm # Añadir unidades en Procesar
     doc.splitter = "1x295/5-1"  
-    doc.opm_power = opm.measure_power() #dBm # Añadir unidades en Procesar
     # Saving data
     folder_lab = os.path.expandvars("./data")
     save_date = datetime.datetime.now().strftime("%Y%m%d")
     circuit = die_name
     folder_measurements = "/".join([folder_lab, project, wafer, save_date])
-    file_name = f"R{reticle}-C{circuit}-{dut}-{angle}"
+    file_name = f"R{reticle}-C{circuit}-{dut}-{angle}" # Consider to remove the angle after ANGLE sweep
 
     # Work with the OSA
     with osa: 
@@ -71,12 +79,14 @@ def main():
             center_wavelength = 1565e-9,
             span = 80e-9,
             sweep_mode = 'SINGLE',
-            sensitivity = -70,
+            sensitivity = -70, # Consider to change this value if high power is measured by OPM
+            resolution = 
         )
         osa.run_sweep(tracename, averages=averages)
         trace = osa.get_trace(tracename)
-        print(f"Power measured by OPM: {opm.measure_power()} dBm")
         ## Editing the yaml document
+        doc.opm_power = opm.measure_power() #dBm 
+        print(f"Power measured by OPM: {opm.measure_power()} dBm")
         doc.osa_idn = osa_idn
         doc.osa_resolution = osa.resolution_bandwidth
         doc.osa_sensitivity = osa.sensitivity_level
@@ -85,7 +95,7 @@ def main():
         doc.osa_sweep_mode = osa.sweep_mode
         doc.osa_integrated_power = osa.integrated_power
         doc.osa_dBm_nm = osa.dBm_nm
-                # Saving txt from osa measurement
+        # Saving txt from osa measurement
         save_trace(folder_measurements=folder_measurements,
                 file_name=file_name,
                 yaml=doc,osa=osa,data=trace)
